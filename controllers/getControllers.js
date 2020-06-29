@@ -79,82 +79,83 @@ const updateAllBlogs = async(yesterday) => {
     });
 }
 const blogs = async function(req, res) {
-    var { start, tag } = req.query;
-    var blogs = [];
-    var hasMore = true;
-    if (start == 0) {
-        blogs = await getLatestBlogs(tag);
-        client.connect(async function(err, client) {
+    // var { start, tag } = req.query;
+    // var blogs = [];
+    // var hasMore = true;
+    // if (start == 0) {
+    //     blogs = await getLatestBlogs(tag);
+    //     client.connect(async function(err, client) {
 
-            var namespace = client.db(dbName).collection('blogs');
-            var result = await namespace.findOne({ tag: tag });
+    //         var namespace = client.db(dbName).collection('blogs');
+    //         var result = await namespace.findOne({ tag: tag });
 
-            if (result.blogs.length < 10) hasMore = false;
+    //         if (result.blogs.length < 10) hasMore = false;
 
-            // blogs = blogs.filter(blog => !blog.linkToBlogPage.includes('onezero.medium')); 
+    //         // blogs = blogs.filter(blog => !blog.linkToBlogPage.includes('onezero.medium')); 
 
-            var responce = [...blogs];
-
-
-            //if responce contains less than 10 blogs then query for blogs in database;
-            for (var count = 0; count < result.blogs.length; count++)
-                if (responce.length >= 10)
-                    break;
-                else {
-                    var isPresent = responce.find(blog => blog.title == result.blogs[count].title);
-                    if (!isPresent)
-                        responce.push(result.blogs[count]);
-                }
+    //         var responce = [...blogs];
 
 
-            res.send({ hasMore, blogs: responce });
-
-            blogs = blogs.reverse(); //so that latest come at the top of array;
-            blogs.forEach(blog => {
-                if (blog.title) {
-                    namespace.findOne({ tag: tag, 'blogs.title': blog.title })
-                        .then(result => {
-                            if (!result) {
-                                namespace.updateOne({ tag }, { $push: { 'blogs': { $each: [blog], $position: 0 } } });
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        });
-                }
-            });
+    //         //if responce contains less than 10 blogs then query for blogs in database;
+    //         for (var count = 0; count < result.blogs.length; count++)
+    //             if (responce.length >= 10)
+    //                 break;
+    //             else {
+    //                 var isPresent = responce.find(blog => blog.title == result.blogs[count].title);
+    //                 if (!isPresent)
+    //                     responce.push(result.blogs[count]);
+    //             }
 
 
-            var today = new Date();
-            var month, year, date;
-            year = today.getFullYear();
-            month = today.getMonth() + 1;
-            date = today.getDate() - 1; //for yesterday;
-            if (month < 10)
-                month = '0' + month;
-            if (date < 10)
-                date = '0' + date;
-            var yesterday = year + '/' + month + '/' + date;
-            var updatedOn = await namespace.findOne({name:'updatedOn'});
-            var updatedOnDate = updatedOn.date;
-            if(updatedOnDate !== yesterday) 
-                updateAllBlogs(yesterday); //updates only if not updated till yesterday otherwise updates for yesterday;
+    //         res.send({ hasMore, blogs: responce });
 
-        });
-    } else {
-        client.connect(function(err, client) {
-            namespace = client.db(dbName).collection('blogs');
-            namespace.findOne({ tag: tag })
-                .then(result => {
-                    if (result) {
-                        blogs = result.blogs.slice(parseInt(start), parseInt(start) + 10);
-                        blogs = blogs.filter(blog => !blog.linkToBlogPage.includes('onezero.medium'));
-                        if (result.length < parseInt(start) + 10 || blogs.length == 0) hasMore = false;
-                        res.send({ hasMore, blogs });
-                    }
-                })
-        });
-    }
+    //         blogs = blogs.reverse(); //so that latest come at the top of array;
+    //         blogs.forEach(blog => {
+    //             if (blog.title) {
+    //                 namespace.findOne({ tag: tag, 'blogs.title': blog.title })
+    //                     .then(result => {
+    //                         if (!result) {
+    //                             namespace.updateOne({ tag }, { $push: { 'blogs': { $each: [blog], $position: 0 } } });
+    //                         }
+    //                     })
+    //                     .catch(err => {
+    //                         console.log(err);
+    //                     });
+    //             }
+    //         });
+
+
+    //         var today = new Date();
+    //         var month, year, date;
+    //         year = today.getFullYear();
+    //         month = today.getMonth() + 1;
+    //         date = today.getDate() - 1; //for yesterday;
+    //         if (month < 10)
+    //             month = '0' + month;
+    //         if (date < 10)
+    //             date = '0' + date;
+    //         var yesterday = year + '/' + month + '/' + date;
+    //         var updatedOn = await namespace.findOne({name:'updatedOn'});
+    //         var updatedOnDate = updatedOn.date;
+    //         if(updatedOnDate !== yesterday) 
+    //             updateAllBlogs(yesterday); //updates only if not updated till yesterday otherwise updates for yesterday;
+
+    //     });
+    // } else {
+    //     client.connect(function(err, client) {
+    //         namespace = client.db(dbName).collection('blogs');
+    //         namespace.findOne({ tag: tag })
+    //             .then(result => {
+    //                 if (result) {
+    //                     blogs = result.blogs.slice(parseInt(start), parseInt(start) + 10);
+    //                     blogs = blogs.filter(blog => !blog.linkToBlogPage.includes('onezero.medium'));
+    //                     if (result.length < parseInt(start) + 10 || blogs.length == 0) hasMore = false;
+    //                     res.send({ hasMore, blogs });
+    //                 }
+    //             })
+    //     });
+    // }
+    return res.send({blogs:[{title:'Here it comes!',description:'',linkToBlogPage:'',img:''}]});
 }
 
 const blogDetail = async(req, res) => {
