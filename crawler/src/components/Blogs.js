@@ -22,7 +22,7 @@ function Blogs(props){
   
   async function getResponse(tagName){
       setLoading(true);
-      let responce = await fetch(`/blogs/?tag=${tagName}&&start=${startWith}`);
+      let responce = await fetch(`/get-blogs/?tag=${tagName}&&start=${startWith}`);
       responce = await responce.json();
       setItems(prev => [...prev,...responce.blogs]);
       setLoading(false);

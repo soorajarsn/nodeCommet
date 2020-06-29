@@ -8,7 +8,7 @@ const path = require('path');
 
 
 //get requests
-router.route('/blogs').get(getControllers.blogs);
+router.route('/get-blogs').get(getControllers.blogs);
 router.route('/detailed-blog').get(getControllers.blogDetail);
 router.route('/responces').get(getControllers.responces);
 router.route('/read-responces').get(getControllers.readResponces);
