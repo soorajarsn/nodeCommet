@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(cookieParser());
-app.use(express.static(__dirname+'/crawler/build'));
+app.use(express.static(__dirname+'/build'));
 app.set('views',__dirname+'/client/views');
 app.set('view engine','ejs');
 app.engine('html',require('ejs').renderFile);
