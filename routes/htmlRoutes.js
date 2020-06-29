@@ -13,7 +13,7 @@ router.route('/detailed-blog').get(getControllers.blogDetail);
 router.route('/responces').get(getControllers.responces);
 router.route('/read-responces').get(getControllers.readResponces);
 router.route('*').get((req,res)=>{
-    res.sendFile(path.join(__dirname+'../../../crawler/build/index.html'));
+    res.sendFile(path.join(__dirname+'../../crawler/build/index.html'));
 });
 //post requests
 // router.route('/').post(postControllers.home);
