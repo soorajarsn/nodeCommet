@@ -1,6 +1,0 @@
-[submodule "backend"]
-	path = backend
-	url = https://github.com/soorajarsn/nodeCommetBackend.git
-[submodule "frontend/crawler"]
-	path = frontend/crawler
-	url = https://github.com/soorajarsn/nodeCommetFrontend.git
