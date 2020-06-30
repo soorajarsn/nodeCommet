@@ -7,16 +7,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const routes = require('./routes/htmlRoutes');
 const app = express();
-// import express from 'backend/node_modules/express';
-// import cors from 'backend/node_modules/cors';
-// import logger from 'backend/node_modules/morgan';
-// import compression from 'backend/node_modules/compression';
-// import cookieParser from 'backend/node_modules/cookie-parser';
-// import bodyParser from 'backend/node_modules/body-parser';
-// import session from 'backend/node_modules/express-session';
-// import {router as routes} from 'backend/routes/htmlRoutes.js  ';
-
-
 
 app.use(cors());
 app.use(compression());
@@ -24,7 +14,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(cookieParser());
-app.use(express.static(__dirname+'/build'));
+app.use(express.static(__dirname+'/../crawler/build'));
 app.set('views',__dirname+'/client/views');
 app.set('view engine','ejs');
 app.engine('html',require('ejs').renderFile);
