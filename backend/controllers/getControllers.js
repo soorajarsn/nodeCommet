@@ -7,142 +7,93 @@ const LanguageDetect = require('languagedetect');
 const lngDetector = new LanguageDetect();
 
 
-const updateAllBlogs = async(yesterday) => {
-    var tags = ['artificial-intelligence', 'data-science', 'javascript', 'biotechnology', 'math', 'space', 'travel', 'outdoors',
-        'world', 'photography', 'fitness', 'creativity', 'fiction', 'books', 'poetry', 'writing', 'true-crime', 'comics', 'tv', 'film',
-        'music', 'style', 'lifestyle', 'beauty', 'environment', 'social-media', 'science', 'technology', 'deep-learning', 'blockchain', 'health', 'future', 'business',
-        'work', 'culture', 'programming', 'design', 'LGBTQIA', 'politics', 'relationships', 'self', 'startups', 'food', 'neuroscience', 'python',
-        'mental-health', 'mindfulness', 'spirituality', 'productivity', 'machine-learning', 'freelancing', 'leadership', 'economy', 'money', 'basic-income',
-        'cryptocurrency', 'cybersecurity', 'privacy', 'blockchain', 'society', 'cities', 'self-driving-cars', 'transportation',
-        'san-francisco', 'humor', 'language', 'digital-life', 'gadgets', 'gaming', 'erotica', 'sex'
-    ]
-    client.connect(async function(err, client) {
-        const namespace = client.db(dbName).collection('blogs');
-        var counter = 0;
-        var updated = false;
-        tags.forEach(async(tag, index) => {
-            var tagdb = await namespace.findOne({tag});
-            var updatedOn = tagdb.updatedOn;
-            if(updatedOn !== yesterday){
-                var link = 'https://medium.com/tag/' + tag + '/archive/' + yesterday;
-                var options = {
-                    method: 'GET',
-                    url: link,
-                    headers: {
-                        "Connection": 'keep-alive'
+function home(req,res){
+    res.send({info:"This is homepage"});
+}
+var years = ['2020','2019','2018'];
+var months = ['12','11','10','09','08','07','06','05','04','03','02','01'];
+var days = ['31','30','29','28','27','26','25','24','23','22','21','20','19','18','17','16','15','14','13','12','11','10','09','08','07','06','05','04','03','02','01'];
+var thisYear = new Date().getFullYear();
+var thisDay = new Date().getDate();
+var thisMonth = new Date().getMonth()+1;
+function createLinks(tag){
+    var links = [];
+    for(var i = 0; i < years.length; i++){
+        for(var j = 0; j < months.length; j++){
+            for(var k = 0; k < days.length; k++){
+                if(parseInt(years[i]) == parseInt(thisYear)){
+                    if(months[j] < thisMonth){
+                        if(months[j] == 2 && days[k] < 29){
+                            links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
+                        }
+                        else if((months[j] == 4 || months[j] == 6 || months[j] == 9 || months[j] == 11) && days[k] < 31){
+                            links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
+                        }
+                        else if((months[j] == 1 || months[j] == 3 || months[j] == 5 || months[j] == 7 || months[j] == 8 || months[j] == 10 || months[j] == 12) && days[k] <= 31){
+                            links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
+                        }
+                    }
+                    else if(months[j] == thisMonth){
+                        if(days[k] <= thisDay-1){
+                            links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
+                        }
                     }
                 }
-                updated = true;
-                setTimeout(async() => {
-                    var nowTagdb = await namespace.findOne({tag});
-                    var nowUpdateStatus = nowTagdb.updatedOn;
-                    if(nowUpdateStatus !== yesterday){
-                        try{
-                            var blogs = await getLatestBlogs(tag, options);
-                            blogs.forEach(blog => {
-                                if (blog.title) {
-                                    namespace.findOne({ tag: tag, 'blogs.title': blog.title })
-                                        .then(result => {
-                                            if (!result) {
-                                                namespace.updateOne({ tag }, { $push: { 'blogs': { $each: [blog], $position: 0 } } });
-                                            }
-                                        })
-                                        .catch(err => {
-                                            console.log(err);
-                                        });
-                                }
-                            });
-                            namespace.updateOne({tag},{$set:{updatedOn:yesterday}});
-                        }
-                        catch(err){
-                            console.log("Error occured while founding blogs for tag ",tag,err);
-                        }
+                else{
+                    if(months[j] == 2 && days[k] < 29){
+                        links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
                     }
-                }, 1000 * 30 * counter);
-                counter++;
+                    else if((months[j] == 4 || months[j] == 6 || months[j] == 9 || months[j] == 11) && days[k] < 31){
+                        links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
+                    }
+                    else if((months[j] == 1 || months[j] == 3 || months[j] == 5 || months[j] == 7 || months[j] == 8 || months[j] == 10 || months[j] == 12) && days[k] <= 31){
+                        links.push(`https://medium.com/tag/${tag}/archive/${years[i]}/${months[j]}/${days[k]}`);
+                    }
+                }
             }
-        });
-        if(!updated)
-            namespace.updateOne({name:'updatedOn'},{$set:{date:yesterday}});
-    });
+        }
+    }
+    return links;
 }
 const blogs = async function(req, res) {
     var { start, tag } = req.query;
+    start = parseInt(start);
+    console.log({start,tag});
+    var tagError = false;
     var blogs = [];
     var hasMore = true;
-    if (start == 0) {
-        blogs = await getLatestBlogs(tag);
-        client.connect(async function(err, client) {
+    var notFound = false;
 
-            var namespace = client.db(dbName).collection('blogs');
-            var result = await namespace.findOne({ tag: tag });
-
-            if (result.blogs.length < 10) hasMore = false;
-
-            // blogs = blogs.filter(blog => !blog.linkToBlogPage.includes('onezero.medium')); 
-
-            var responce = [...blogs];
-
-
-            //if responce contains less than 10 blogs then query for blogs in database;
-            for (var count = 0; count < result.blogs.length; count++)
-                if (responce.length >= 10)
-                    break;
-                else {
-                    var isPresent = responce.find(blog => blog.title == result.blogs[count].title);
-                    if (!isPresent)
-                        responce.push(result.blogs[count]);
-                }
-
-
-            res.send({ hasMore, blogs: responce });
-
-            blogs = blogs.reverse(); //so that latest come at the top of array;
-            blogs.forEach(blog => {
-                if (blog.title) {
-                    namespace.findOne({ tag: tag, 'blogs.title': blog.title })
-                        .then(result => {
-                            if (!result) {
-                                namespace.updateOne({ tag }, { $push: { 'blogs': { $each: [blog], $position: 0 } } });
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        });
-                }
-            });
-
-
-            var today = new Date();
-            var month, year, date;
-            year = today.getFullYear();
-            month = today.getMonth() + 1;
-            date = today.getDate() - 1; //for yesterday;
-            if (month < 10)
-                month = '0' + month;
-            if (date < 10)
-                date = '0' + date;
-            var yesterday = year + '/' + month + '/' + date;
-            var updatedOn = await namespace.findOne({name:'updatedOn'});
-            var updatedOnDate = updatedOn.date;
-            if(updatedOnDate !== yesterday) 
-                updateAllBlogs(yesterday); //updates only if not updated till yesterday otherwise updates for yesterday;
-
-        });
-    } else {
-        client.connect(function(err, client) {
-            namespace = client.db(dbName).collection('blogs');
-            namespace.findOne({ tag: tag })
-                .then(result => {
-                    if (result) {
-                        blogs = result.blogs.slice(parseInt(start), parseInt(start) + 10);
-                        blogs = blogs.filter(blog => !blog.linkToBlogPage.includes('onezero.medium'));
-                        if (result.length < parseInt(start) + 10 || blogs.length == 0) hasMore = false;
-                        res.send({ hasMore, blogs });
-                    }
-                })
-        });
+    if(!tag){
+        console.log({info:'going to redirect to homepage'});
+        return res.send({hasMore:false,blogs,tagError:true,notFound});
     }
+    
+    var links = createLinks(tag);
+    var link = links[parseInt(start/10)];
+    
+    if(parseInt(start/10)+1 >= links.length)
+        hasMore = false;
+    
+    var options = {
+        method: 'GET',
+        url: link,
+        headers: {
+            "Connection": 'keep-alive'
+        }
+    }
+    
+    try{
+        blogs = await getLatestBlogs(tag,options);
+        return res.send({hasMore,tagError,notFound,blogs});
+    }
+    catch(err){
+        console.log(err.statusCode);
+        if(err.statusCode == 404){
+            return res.send({hasMore:false,tagError,blogs:[],notFound:true});
+        }
+    }
+
 }
 
 const blogDetail = async(req, res) => {
@@ -159,31 +110,58 @@ const blogDetail = async(req, res) => {
     }
     return res.send({ body: result });
 }
-async function getLatestBlogs(tag, options = null) {
+async function getLatestBlogs(tag, options = null,socket,hasMore) {
     
     var htm = '';
-    
-    if (!options)
+    console.log(options);
+    try{
+        if (!options)
         htm = await request('https://medium.com/tag/' + tag);
-    else
-        htm = await request(options);
-    
-        const $ = cheerio.load(htm);
+        else
+            htm = await request(options);
+    }
+    catch(err){
+        console.log(err.statusCode);
+        console.log({infoFromGet:'Cached'});
+        if(err.statusCode == 404){
+            socket.emit('FromAPI',{hasMore:false,streaming:false,blog:[],notFound:true})
+        }
+    }
+    const $ = cheerio.load(htm);
     var result = [];
+    const len = $('div.streamItem').length;
+    var streaming = true,responce;
     $('div.streamItem').each(function(i, element) {
+       try{
         var title = $(element).find('h3.graf--title');
-        var description = $(element).find('h4.graf--subtitle');
-        var linkToBlogPage = $(element).find('div.postArticle').children('div').eq(1).children('a').attr('href').split("?")[0];
-        var authorLockup = $(element).find('div.postMetaInline-authorLockup');
-        var details = authorLockup.children('div').text() + ", " + authorLockup.children('div').children('span.readingTime').attr('title');
-        var writer = authorLockup.children('a').eq(0).text();
-        var img = $(element).find('figure').find('img').attr('src');
-        var engProb = lngDetector.detect(title.text()).filter(languageProb => languageProb[0] == 'english')[0];
-        if (!linkToBlogPage.includes('onezero.medium') && title.text() && (engProb && engProb[1] > 0.001))
-            result.push({ title: title.text(), description: description.text(), linkToBlogPage: linkToBlogPage, details: details, writer: writer, img: img });
+            var description = $(element).find('h4.graf--subtitle');
+            var linkToBlogPage = $(element).find('div.postArticle').children('div').eq(1).children('a').attr('href').split("?")[0];
+            var authorLockup = $(element).find('div.postMetaInline-authorLockup');
+            var details = authorLockup.children('div').text() + ", " + authorLockup.children('div').children('span.readingTime').attr('title');
+            var writer = authorLockup.children('a').eq(0).text();
+            var img = $(element).find('figure').find('img').attr('src');
+            var engProb = lngDetector.detect(title.text()).filter(languageProb => languageProb[0] == 'english')[0];
 
+            if (!linkToBlogPage.includes('onezero.medium') && title.text() && (engProb && engProb[1] > 0.001))
+                result.push({ title: title.text(), description: description.text(), linkToBlogPage: linkToBlogPage, details: details, writer: writer, img: img });
+       }
+       catch(err){
+           console.log(err);
+       }
     });
-    return result;
+    
+    result.forEach((blog,index)=>{
+        setTimeout(function(){
+            if(index < 10){
+                if(index == 9 || index == result.length -1 )
+                    streaming = false;
+                responce = {
+                    blog,streaming,hasMore,notFound:false
+                }
+                socket.emit('FromAPI',responce);
+            }
+        },index*1000);
+    });
 }
 
 async function scrapBlogDetail(link = 'https://medium.com/better-programming/the-secret-to-being-a-top-developer-is-building-things-heres-a-list-of-fun-apps-to-build-aac61ac0736c') {
@@ -256,8 +234,35 @@ async function scrapBlogDetail(link = 'https://medium.com/better-programming/the
     // $('a[rel')
 }
 
+function socket(io){
+    let interval;
+    io.on('connection',socket => {
+        console.log('New client connected');
+        if(interval)
+            clearInterval(interval);
+        socket.on('getBlogs',(tag,start)=>{
+            console.log(tag,start);
+            var hasMore = true;
+            var links = createLinks(tag);
+            var link = links[parseInt(start/10)];
+            if(parseInt(start/10)+1 >= links.length)
+                hasMore = false;
+            var options = {
+                method: 'GET',
+                url: link,
+                headers: {
+                    "Connection": 'keep-alive'
+                }
+            }
+            getLatestBlogs(tag,options,socket,hasMore);
+        });
+        socket.on('disconnect',()=>{console.log('client disconnected');clearInterval(interval);});
+    });
+}
 
 module.exports = {
     blogs,
-    blogDetail
+    blogDetail,
+    home,
+    socket
 }

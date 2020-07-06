@@ -3,8 +3,8 @@ import qs from 'qs';
 import Nav from './Nav';
 import Loader from './Loader';
 import {useParams} from 'react-router';
-
-
+import socketIOClient from 'socket.io-client';
+import {Redirect} from "react-router-dom";
   // function handleForTagClick(event){
   //   console.log(event.target.getAttribute('id'));
   //   var tagName = event.target.getAttribute('id');
@@ -16,29 +16,40 @@ function Blogs(props){
   const [items,setItems] = useState([]);
   const [startWith,setStartWith] = useState(0);
   const [tag,setTag] = useState(useParams().tg);
-  const [loading,setLoading] = useState(false);
+  const [loading,setLoading] = useState(true);
   const [hasMore,setHasMore] = useState(false);
-  // console.log(props.match.params);
+  const [streaming,setStreaming] = useState(false);
+  const [redirect,setRedirect] = useState(false);
   
-  async function getResponse(tagName){
-      setLoading(true);
-      let responce = await fetch(`/get-blogs/?tag=${tagName}&&start=${startWith}`);
-      responce = await responce.json();
-      setItems(prev => [...prev,...responce.blogs]);
-      setLoading(false);
-      setStartWith(prev => prev+10);
-      setHasMore(responce.hasMore);
-      // console.log(responce);
+  var socket;
+  function getResponse(){
+    setLoading(true);
+    setStreaming(true);
+    socket = socketIOClient('/');
+    socket.emit('getBlogs',tag,startWith);
+    socket.on("FromAPI",responce => {
+      if(!responce.streaming)
+        socket.disconnect();
+      processResponce(responce);
+    })
   }
-  
-  
+
   useEffect(()=>{
-    getResponse(tag);
+    getResponse();
   },[]);
   
-  
+  function processResponce(responce){
+    setItems(prev=>[...prev,responce.blog]);
+    setLoading(false);
+    setStreaming(responce.streaming);
+    setRedirect(responce.notFound);
+    if(!responce.streaming){//so that these start variable change for only one time in a single request;
+      setStartWith(prev => prev+10);
+      setHasMore(responce.hasMore);
+    }
+  }
   function handleGetButton(){
-      getResponse(tag);
+      getResponse();
   }
   
   
@@ -46,6 +57,10 @@ function Blogs(props){
     return (
       <Loader />
     )
+  }
+  else if(redirect){
+    const redirectTo = `/not-found/${tag}`;
+    return <Redirect to={redirectTo} />;
   }
   else{
     return (
@@ -62,7 +77,7 @@ function Blogs(props){
                                                   <div className="content-container">
                                                     <h2>{item.title}</h2>
                                                     <p>{item.description}...</p>
-                                                    <ul><li>written By - <strong>{item.writer}</strong></li><li><i class="far fa-star"></i>{item.details}</li></ul>
+                                                    <ul><li>written By - <strong>{item.writer}</strong></li><li><i className="far fa-star"></i>{item.details}</li></ul>
                                                   </div>
                                                   { item.img && <div className="img-container">
                                                                   <img src={item.img} alt=''/>
@@ -73,7 +88,16 @@ function Blogs(props){
                               )
                     }
               </div>
-              <div className="button-container">{!loading && hasMore && <button className="get-more-button" onClick={handleGetButton}>Get More</button>}</div>
+              { 
+                streaming &&    <div className="card">
+                                    <div className="content-container streaming">
+                                      <h1>Crawling...</h1>
+                                    </div>
+                                    <div className="img-container">
+                                    </div>
+                                </div>
+              }
+              <div className="button-container">{!loading && !streaming && hasMore && <button className="get-more-button" onClick={handleGetButton}>Get More</button>}</div>
           </div>
         </div>
       </div>

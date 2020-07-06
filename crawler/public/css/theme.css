@@ -5,6 +5,61 @@ body {
 strong {
   font-weight: bolder; }
 
+form {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.2rem; }
+  form .input-container {
+    width: 100%;
+    background: white;
+    overflow: hidden;
+    border-radius: .3rem;
+    margin: .5rem 0; }
+    form .input-container input {
+      width: 100%;
+      background: transparent;
+      padding: .7rem 0;
+      padding-left: .5rem;
+      border: 0; }
+    form .input-container:hover {
+      box-shadow: 0 0 .5rem 0 white; }
+  form .button-container {
+    width: 100%;
+    background: lightblue;
+    overflow: hidden;
+    border-radius: .3rem;
+    margin: .5rem 0;
+    box-shadow: inset 0 0 1rem 0 #336d88; }
+    form .button-container button {
+      width: 100%;
+      padding: .7rem 0;
+      background: transparent;
+      font-weight: 900;
+      border: 0; }
+    form .button-container:hover {
+      box-shadow: 0 0 1rem .4rem #336d88;
+      transition-duration: 200ms;
+      cursor: pointer; }
+  @media (min-width: 700px) {
+    form {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      form .input-container {
+        width: 30rem;
+        margin-right: 1rem; }
+      form .button-container {
+        padding: 0;
+        width: 10rem; }
+        form .button-container button {
+          width: fit-content;
+          padding: .7rem 3rem; } }
+  @media (min-width: 1000px) {
+    form .input-container input {
+      padding: .9rem 0 .9rem .5rem; }
+    form .button-container button {
+      padding: .9rem 3rem; } }
+
 nav {
   padding: 1rem 1rem;
   background: white;
@@ -130,11 +185,14 @@ footer {
 
 .top-loader {
   border-top: .2rem solid yellowgreen;
-  width: 70%;
+  width: 90%;
   height: 1rem;
   -webkit-animation: slip 1s linear infinite;
   animation: slip 1s linear infinite;
   position: fixed; }
+  @media (min-width: 700px) {
+    .top-loader {
+      width: 70%; } }
 
 @-webkit-keyframes spin {
   0% {
@@ -148,14 +206,14 @@ footer {
     transform: rotate(360deg); } }
 @-webkit-keyframes slip {
   0% {
-    -webkit-transform: translate(-1000px); }
+    -webkit-transform: translate(-100%); }
   100% {
-    -webkit-transform: translate(2400px); } }
+    -webkit-transform: translate(100%); } }
 @keyframes slip {
   0% {
-    transform: translate(-1000px); }
+    transform: translate(-100%); }
   100% {
-    transform: translate(2400px); } }
+    transform: translate(100%); } }
 .article-content {
   min-height: 60vh; }
   .article-content .no-hover-effect {

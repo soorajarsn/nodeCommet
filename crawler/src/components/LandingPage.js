@@ -1,4 +1,5 @@
-import React from 'react';
+import React,{ useState, useEffect} from 'react';
+import SearchTagForm from './SearchTagForm';
 var tags = ['artificial-intelligence','data-science','javascript','biotechnology','math','space','travel','outdoors',
               'world','photography','fitness','creativity','fiction','books','poetry','writing','true-crime','comics','tv','film',
               'music','style','lifestyle','beauty','environment','social-media','science','technology','deep-learning','blockchain','health','future','business',
@@ -12,11 +13,20 @@ var moreTags = ['feminism','women','women-in-tech','gender','equality','politics
                 'fetish','event-us','leather','fetish','news','events','clubs','contests','latex','market-research-reports','growth','analysis',
                 'marketing-strategies','market-trends','healthcare','market-size','market-growth',]
 function LandingPage(){
+    // const [responce,setResponce] = useState("");
+    // useEffect(()=>{
+    //   const socket = socketIOClient('http://localhost:4000');
+    //   socket.on('FromAPI',data=>{
+    //     setResponce(data);
+    //   });
+    //   return () => socket.disconnect();
+    // },[]);
     return (
       <div className="landing-page-container">
           <div className="content-container">
             <h1>Select What you are into!!!</h1>
             <p>And it will help you find great things that really matter to you.</p>
+            <SearchTagForm />
             <div className="tags-container">
               {
                 tags.map((tag,index) => <a className={" tag"} key={index} id={tag} href={`/blogs/${tag}`}><div className="pound" id={tag}>#</div>{tag}</a>)

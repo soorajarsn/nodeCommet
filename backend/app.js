@@ -15,9 +15,10 @@ app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.static(__dirname+'/../crawler/build'));
-app.set('views',__dirname+'/client/views');
-app.set('view engine','ejs');
-app.engine('html',require('ejs').renderFile);
+
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const blogsController = require('./controllers/getControllers').socket(io);
 app.use(session({
     name:"userId",
     secret:'sjfowi#@#$!@# lfsjlrei234@#l jlrj2#$!23',
@@ -28,7 +29,7 @@ app.use(session({
 
 app.use('/',routes);
 const PORT = process.env.PORT || 4000;
-app.listen(PORT,function(){
-    console.log('app started listening on port ',PORT);
-});
+
+server.listen(PORT);
+
 module.exports = app;
