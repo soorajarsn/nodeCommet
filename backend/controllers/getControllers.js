@@ -1,6 +1,6 @@
-const database = require('../database/database');
-const client = database.client;
-const dbName = database.dbName;
+// const database = require('../database/database');
+// const client = database.client;
+// const dbName = database.dbName;
 const request = require('request-promise');
 const cheerio = require('cheerio');
 const LanguageDetect = require('languagedetect');
