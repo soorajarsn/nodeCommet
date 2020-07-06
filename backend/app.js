@@ -16,9 +16,9 @@ app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.static(__dirname+'/../crawler/build'));
 
-// const server = require('http').createServer(app);
-// const io = require('socket.io')(server);
-// const blogsController = require('./controllers/getControllers').socket(io);
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const blogsController = require('./controllers/getControllers').socket(io);
 app.use(session({
     name:"userId",
     secret:'sjfowi#@#$!@# lfsjlrei234@#l jlrj2#$!23',
@@ -30,6 +30,6 @@ app.use(session({
 app.use('/',routes);
 const PORT = process.env.PORT || 4000;
 
-// server.listen(PORT);
-app.listen(4000);
+server.listen(PORT);
+// app.listen(4000
 module.exports = app;
