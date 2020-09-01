@@ -30,4 +30,4 @@ to manage the state of the application and developed the infinite scrolling in t
 To design the pages, I have used scss.
 
 ## Amazon aws EC2
-You can find this app working [here](ec2-13-233-33-52.ap-south-1.compute.amazonaws.com)
+You can find this app working [here](http://ec2-13-233-33-52.ap-south-1.compute.amazonaws.com)
