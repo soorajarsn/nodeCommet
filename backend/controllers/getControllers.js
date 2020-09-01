@@ -177,7 +177,7 @@ async function scrapBlogDetail(link = 'https://medium.com/better-programming/the
     const $ = cheerio.load(htm);
 
     var article = $('article').eq(0);
-
+    console.log($(article).html().toString());
     var tagsAndBloggerDetails = $(article).nextAll('div.r').eq(-1).prev();
 
     //removing the divs that are extra in most parent div containing tags;
@@ -216,6 +216,7 @@ async function scrapBlogDetail(link = 'https://medium.com/better-programming/the
     }
     $('img').each(function(index, img) {
         $(img).attr('style', 'opacity:1');
+        console.log($(img).parent().children('img').toString());
     });
     $('button').each(function(index, button) {
         if (!$(button).hasClass('mine'))
