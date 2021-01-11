@@ -1,6 +1,6 @@
 # About
 This project is about web crawling. There is website called medium.com, where we have articles on different topics. It
-crawls the content of a website called [medium.com](https://medium.com). 
+crawls the articles of a that website [medium.com](https://medium.com). 
 I have used react as frontend and node.js as backend. On frontend it has a landing page from where you can select 
 a given topic or you can search for a topic that you may want to read using a search box. When you select a topic 
 firstly it shows ten recent articles, and then you can fetch more articles by pressing on a button at the bottom of the 
