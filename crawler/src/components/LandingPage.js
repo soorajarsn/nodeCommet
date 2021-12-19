@@ -6,11 +6,11 @@ var tags = ['artificial-intelligence','data-science','javascript','biotechnology
               'work','culture','programming','design','LGBTQIA','politics','relationships','self','startups','food','neuroscience','python',
                'mental-health','mindfulness','spirituality','productivity','machine-learning','freelancing','leadership','economy','money','basic-income',
                'cryptocurrency','cybersecurity','privacy','blockchain','society','cities','self-driving-cars','transportation',
-              'san-francisco','humor','language','digital-life','gadgets','gaming','erotica','love','sex'
+              'san-francisco','humor','language','digital-life','gadgets','gaming',,'love'
             ]
-var moreTags = ['feminism','women','women-in-tech','gender','equality','politics','diversity','women-rights','sexism','gender-equality','fashion',
-                'life-lessions','life','love','life','dating','self-improvement','marriage','sexuality','short-story','bdsm','kink',
-                'fetish','event-us','leather','fetish','news','events','clubs','contests','latex','market-research-reports','growth','analysis',
+var moreTags = ['feminism','women','women-in-tech','gender','equality','politics','diversity','women-rights','gender-equality','fashion',
+                'life-lessions','life','love','life','dating','self-improvement','marriage','short-story',
+                'event-us','leather','news','events','clubs','contests','latex','market-research-reports','growth','analysis',
                 'marketing-strategies','market-trends','healthcare','market-size','market-growth',]
 function LandingPage(){
     // const [responce,setResponce] = useState("");

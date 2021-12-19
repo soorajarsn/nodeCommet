@@ -28,7 +28,7 @@ app.use(session({
 }));
 
 app.use('/',routes);
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT);
 // app.listen(4000
